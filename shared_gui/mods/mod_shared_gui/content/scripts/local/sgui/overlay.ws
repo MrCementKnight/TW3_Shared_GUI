@@ -1,111 +1,44 @@
-/*
-@wrapMethod(CR4Game) function OnGameStarting(restored : bool )
+// Function for opening the first notification popup.
+function SGUI_Notification_OpenPopup_1( notificationData : SGUI_W3NotificationData )
 {
-	theGame.RequestPopup( 'TestPopup' );
-	theGame.RequestPopup( 'Test2Popup' );
-	return wrappedMethod(restored);
-}
-@wrapMethod(CR4CommonMainMenuBase) function OnConfigUI()
-{
-	var SGUI_overlayPopupRef  : SGUI_CR4OverlayPopup;
+	var overlayPopupRef  : SGUI_CR4OverlayPopup;
 	
-	SGUI_overlayPopupRef = (SGUI_CR4OverlayPopup)theGame.GetGuiManager().GetPopup('TestPopup');
-	if (!SGUI_overlayPopupRef)
+	
+	overlayPopupRef = (SGUI_CR4OverlayPopup)theGame.GetGuiManager().GetPopup('TestPopup');
+	if (!overlayPopupRef)
 	{
-		theGame.RequestPopup( 'TestPopup' );
-		theGame.RequestPopup( 'Test2Popup' );
-	}
-	
-	return wrappedMethod();
-}
-@wrapMethod(CR4UIRescaleMenu) function OnConfigUI()
-{
-	var SGUI_overlayPopupRef  : SGUI_CR4OverlayPopup;
-	
-	SGUI_overlayPopupRef = (SGUI_CR4OverlayPopup)theGame.GetGuiManager().GetPopup('TestPopup');
-	if (!SGUI_overlayPopupRef)
-	{
-		theGame.RequestPopup( 'TestPopup' );
-		theGame.RequestPopup( 'Test2Popup' );
-	}
-	
-	return wrappedMethod();
-}
-*/
-/*
-exec function sgui_ov_vanilla()
-{
-	theGame.GetGuiManager().ShowNotification("ov");
-}
-
-exec function sgui_ov( optional second : bool ) : void
-{
-	var SGUI_notificationData : SGUI_W3NotificationData;
-	var notificationModule : CScriptedFlashObject;
-	
-	SGUI_notificationData = new SGUI_W3NotificationData in theGame.GetGuiManager();
-	SGUI_notificationData.messageText = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-	//SGUI_notificationData.duration = 4000;
-	//SGUI_notificationData.queue = false;
-	//SGUI_notificationData.x = 0.5;
-	//SGUI_notificationData.y = 0.5;
-	//SGUI_notificationData.w = 800;
-	//SGUI_notificationData.color = 0xcccccc;
-	//SGUI_notificationData.alpha = 0.95;
-	//SGUI_notificationData.anim = true;
-	
-	if( second )
-	{
-		SGUI_notificationData.x = 0.1;
-		SGUI_notificationData.y = 0.1;
-		SGUI_Notification_OpenPopup_2(SGUI_notificationData);
+		theGame.RequestPopup( 'TestPopup',  notificationData );
 	}
 	else
 	{
-		SGUI_notificationData.x = 0.5;
-		SGUI_notificationData.y = 0.5;
-		SGUI_Notification_OpenPopup_1(SGUI_notificationData);
+		overlayPopupRef.ShowNotification( notificationData.messageText, notificationData.duration, notificationData.queue, notificationData.x, notificationData.y, notificationData.w, notificationData.color, notificationData.alpha, notificationData.anim );
 	}
 }
-*/
 
-function SGUI_Notification_OpenPopup_1( SGUI_notificationData : SGUI_W3NotificationData )
+// Function for opening the second notification popup.
+function SGUI_Notification_OpenPopup_2( notificationData : SGUI_W3NotificationData )
 {
-	var SGUI_overlayPopupRef  : SGUI_CR4OverlayPopup;
+	var overlayPopupRef  : SGUI_CR4OverlayPopup;
 	
 	
-	SGUI_overlayPopupRef = (SGUI_CR4OverlayPopup)theGame.GetGuiManager().GetPopup('TestPopup');
-	if (!SGUI_overlayPopupRef)
+	overlayPopupRef = (SGUI_CR4OverlayPopup)theGame.GetGuiManager().GetPopup('Test2Popup');
+	if (!overlayPopupRef)
 	{
-		theGame.RequestPopup( 'TestPopup',  SGUI_notificationData );
+		theGame.RequestPopup( 'Test2Popup',  notificationData );
 	}
 	else
 	{
-		SGUI_overlayPopupRef.ShowNotification( SGUI_notificationData.messageText, SGUI_notificationData.duration, SGUI_notificationData.queue, SGUI_notificationData.x, SGUI_notificationData.y, SGUI_notificationData.w, SGUI_notificationData.color, SGUI_notificationData.alpha, SGUI_notificationData.anim );
+		overlayPopupRef.ShowNotification( notificationData.messageText, notificationData.duration, notificationData.queue, notificationData.x, notificationData.y, notificationData.w, notificationData.color, notificationData.alpha, notificationData.anim );
 	}
 }
 
-function SGUI_Notification_OpenPopup_2( SGUI_notificationData : SGUI_W3NotificationData )
-{
-	var SGUI_overlayPopupRef  : SGUI_CR4OverlayPopup;
-	
-	
-	SGUI_overlayPopupRef = (SGUI_CR4OverlayPopup)theGame.GetGuiManager().GetPopup('Test2Popup');
-	if (!SGUI_overlayPopupRef)
-	{
-		theGame.RequestPopup( 'Test2Popup',  SGUI_notificationData );
-	}
-	else
-	{
-		SGUI_overlayPopupRef.ShowNotification( SGUI_notificationData.messageText, SGUI_notificationData.duration, SGUI_notificationData.queue, SGUI_notificationData.x, SGUI_notificationData.y, SGUI_notificationData.w, SGUI_notificationData.color, SGUI_notificationData.alpha, SGUI_notificationData.anim );
-	}
-}
-
+// Function for closing the first notification popup.
 function SGUI_Notification_ClosePopup_1()
 {
 	theGame.ClosePopup('TestPopup');
 }
 
+// Function for closing the second notification popup.
 function SGUI_Notification_ClosePopup_2()
 {
 	theGame.ClosePopup('Test2Popup');
@@ -113,15 +46,16 @@ function SGUI_Notification_ClosePopup_2()
 
 class SGUI_W3NotificationData extends CObject
 {
-	public var messageText 	: string;
-	public var duration    	: float;
-	public var queue		: bool;
-	default duration = 0;
-	default queue = false;
+	public var messageText 	: string; // Text.
+	public var duration    	: float; // Duration for displaying the popup. Set in milliseconds. If set to -1, it will no longer close automatically over time.
+	public var queue		: bool; // Waits until the currently displayed notification popup is closed.
+	default duration = 4000;
 	
-	var x, y, w, alpha : float;
-	var color : int;
-	var anim : bool;
+	var x, y : float; // Popup display position. Set it to a value between 0 and 1.
+	var w : float; // Width of the panel. The height is automatically adjusted based on the length of the text. If set to -1, it will use the same width as vanilla (automatically adjusted between 200 and 400).
+	var color : int; // Panel color. Set using a hexadecimal value such as `0xFFFFFF`. If set to `-1`, the vanilla color will be used.
+	var alpha : float; // Panel opacity. Set it to a value between 0 and 1.
+	var anim : bool; // Applies animations when the popup appears and disappears.
 	default x = 0.05;
 	default y = 0.95;
 	default w = -1;
@@ -398,3 +332,38 @@ class SGUI_CR4OverlayPopup extends CR4PopupBase
 		m_fxShowEP2Logo.InvokeSelfFiveArgs( FlashArgBool( show ), FlashArgNumber( fadeInterval ), FlashArgInt( x ), FlashArgInt( y ), FlashArgString( path ) );
 	}
 }
+
+/*
+@wrapMethod(CR4Game) function OnGameStarting(restored : bool )
+{
+	theGame.RequestPopup( 'TestPopup' );
+	theGame.RequestPopup( 'Test2Popup' );
+	return wrappedMethod(restored);
+}
+@wrapMethod(CR4CommonMainMenuBase) function OnConfigUI()
+{
+	var overlayPopupRef  : SGUI_CR4OverlayPopup;
+	
+	overlayPopupRef = (SGUI_CR4OverlayPopup)theGame.GetGuiManager().GetPopup('TestPopup');
+	if (!overlayPopupRef)
+	{
+		theGame.RequestPopup( 'TestPopup' );
+		theGame.RequestPopup( 'Test2Popup' );
+	}
+	
+	return wrappedMethod();
+}
+@wrapMethod(CR4UIRescaleMenu) function OnConfigUI()
+{
+	var overlayPopupRef  : SGUI_CR4OverlayPopup;
+	
+	overlayPopupRef = (SGUI_CR4OverlayPopup)theGame.GetGuiManager().GetPopup('TestPopup');
+	if (!overlayPopupRef)
+	{
+		theGame.RequestPopup( 'TestPopup' );
+		theGame.RequestPopup( 'Test2Popup' );
+	}
+	
+	return wrappedMethod();
+}
+*/

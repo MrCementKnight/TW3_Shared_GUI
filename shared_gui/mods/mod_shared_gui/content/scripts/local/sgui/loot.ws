@@ -1,44 +1,4 @@
-/*
-exec function sgui_loot()
-{
-	var popupData : SGUI_W3LootPopupData = new SGUI_W3LootPopupData in theGame;
-	var contents : SGUI_Loot_Struct_EntryContents;
-	var item : SItemUniqueId;
-	
-	
-	//popupData.title = "TITLE";
-	//popupData.x = 1900;
-	//popupData.y = 1080;
-	
-	contents.SGUI_LSEC_id_str = "A";
-	contents.SGUI_LSEC_id_name = 'a';
-	contents.SGUI_LSEC_label = "AAA";
-	contents.SGUI_LSEC_subLabel = "aaa";
-	contents.SGUI_LSEC_quantity = "a";
-	contents.SGUI_LSEC_isIconTransparent = false;
-	contents.SGUI_LSEC_isExclamation = false;
-	SGUI_Loot_PushContents(popupData, contents);
-	
-	contents.SGUI_LSEC_id_str = "B";
-	contents.SGUI_LSEC_id_name = 'b';
-	contents.SGUI_LSEC_label = "BBB";
-	contents.SGUI_LSEC_subLabel = "bbb";
-	contents.SGUI_LSEC_isIconTransparent = true;
-	contents.SGUI_LSEC_isExclamation = true;
-	SGUI_Loot_PushContents(popupData, contents);
-	
-	GetWitcherPlayer().GetItemEquippedOnSlot(EES_SteelSword, item);
-	contents.SGUI_LSEC_id_str = "C";
-	contents.SGUI_LSEC_id_name = thePlayer.inv.GetItemName(item);
-	contents.SGUI_LSEC_id_item = item;
-	contents.SGUI_LSEC_label = thePlayer.inv.GetItemName(item);
-	contents.SGUI_LSEC_subLabel = "ccc";
-	SGUI_Loot_PushContents(popupData, contents);
-	
-	SGUI_Loot_OpenPopup(popupData);
-}
-*/
-
+// Function for opening the loot popup.
 function SGUI_Loot_OpenPopup( popupData : SGUI_W3LootPopupData )
 {
 	popupData.x = popupData.x * 1900;
@@ -47,59 +7,62 @@ function SGUI_Loot_OpenPopup( popupData : SGUI_W3LootPopupData )
 	theGame.RequestPopup('PsoPopup', popupData);
 }
 
+// Function for closing the loot popup.
 function SGUI_Loot_ClosePopup()
 {
 	theGame.ClosePopup('PsoPopup');
 }
 
+// Function for pushing each entry’s settings into an array.
 function SGUI_Loot_PushContents( out popupData : SGUI_W3LootPopupData, out contents : SGUI_Loot_Struct_EntryContents )
 {
 	popupData.entries.PushBack(contents);
 	
-	contents.SGUI_LSEC_id_str = "";
-	contents.SGUI_LSEC_id_name = '';
-	contents.SGUI_LSEC_id_item = GetInvalidUniqueId();
-	contents.SGUI_LSEC_label = "";
-	contents.SGUI_LSEC_subLabel = "";
-	contents.SGUI_LSEC_iconPath = "";
-	contents.SGUI_LSEC_quantity = "";
-	contents.SGUI_LSEC_color = SGUI_LEC_gray;
-	contents.SGUI_LSEC_isIconTransparent = false;
-	contents.SGUI_LSEC_isExclamation = false;
+	contents.sgui_lsec_id_str = "";
+	contents.sgui_lsec_id_name = '';
+	contents.sgui_lsec_id_item = GetInvalidUniqueId();
+	contents.sgui_lsec_label = "";
+	contents.sgui_lsec_subLabel = "";
+	contents.sgui_lsec_iconPath = "";
+	contents.sgui_lsec_quantity = "";
+	contents.sgui_lsec_color = SGUI_LEC_gray;
+	contents.sgui_lsec_isIconSemiTransparent = false;
+	contents.sgui_lsec_isExclamation = false;
 }
 
 class SGUI_W3LootPopupData extends CObject
 {
-	var title : string;
-	var isBackgroundFilter : bool;
-	var scale : SGUI_Loot_Enum_Scale;
-	var inputContext : name;
-	var scroll : float;
-	var index : int;
-	var x, y : float;
+	var title : string; // Text displayed at the top of the panel.
+	var isPause : bool; // Pause the game while the popup is open.
+	var isBackgroundFilter : bool; // Applies a semi-transparent black filter to the background.
+	var scale : SGUI_Loot_Enum_Scale; // Allows you to choose whether the popup scale follows the game settings or is forced to either Large or Small.
+	var inputContext : name; // Input context during the popup.
+	var scroll : float; // Scroll position when the popup is opened.
+	var index : int; // Index of the entry that will be focused when the popup is opened.
+	var x, y : float; // Popup display position. Set it to a value between 0 and 1.
+	var entries : array< SGUI_Loot_Struct_EntryContents >; // Settings for each entry.
+	default inputContext = 'EMPTY_CONTEXT';
 	default x = 0.3472; default y = 0.8947;
 	//default x = 659.65; default y = 966.29;
-	
-	var entries : array< SGUI_Loot_Struct_EntryContents >;
 }
 
 struct SGUI_Loot_Struct_EntryContents
 {
-	var SGUI_LSEC_id_str : string;
-	var SGUI_LSEC_id_name : name;
-	var SGUI_LSEC_id_item : SItemUniqueId;
-	var SGUI_LSEC_label : string;
-	var SGUI_LSEC_subLabel : string;
-	var SGUI_LSEC_iconPath : string;
-	var SGUI_LSEC_quantity : string;
-	var SGUI_LSEC_color : SGUI_Loot_Enum_Colors;
-	var SGUI_LSEC_isIconTransparent : bool;
-	var SGUI_LSEC_isExclamation : bool;
+	var sgui_lsec_id_str : string; // ID that can be received by the OnChangedIndex and OnSelect functions.
+	var sgui_lsec_id_name : name; // ID that can be received by the OnChangedIndex and OnSelect functions.
+	var sgui_lsec_id_item : SItemUniqueId; // ID that can be received by the OnChangedIndex and OnSelect functions.
+	var sgui_lsec_label : string; // Main text of the entry.
+	var sgui_lsec_subLabel : string; // Subtext displayed below the main text.
+	var sgui_lsec_iconPath : string; // Path to the icon displayed to the left of the main text.
+	var sgui_lsec_quantity : string; // Text displayed in the bottom-right corner of the icon.
+	var sgui_lsec_isIconSemiTransparent : bool; // Makes the icon semi-transparent.
+	var sgui_lsec_isExclamation : bool; // Displays an exclamation mark to the left of the icon.
+	var sgui_lsec_color : SGUI_Loot_Enum_Colors; // Background color of the entry.
 }
 
 enum SGUI_Loot_Enum_Scale
 {
-	SGUI_LES_cfg,
+	SGUI_LES_cfg, // Follow game settings.
 	SGUI_LES_small,
 	SGUI_LES_large,
 }
@@ -113,30 +76,9 @@ enum SGUI_Loot_Enum_Colors
 	SGUI_LEC_green
 }
 
-statemachine class SGUI_Loot_Class_ContextMoniter
-{
-	var loot : SGUI_CR4LootPopup;
-	
-	function Init(loot : SGUI_CR4LootPopup)
-	{
-		this.loot = loot;
-		GotoState('SGUI_Loot_State_ContextMoniter');
-	}
-}
 
-state SGUI_Loot_State_ContextMoniter in SGUI_Loot_Class_ContextMoniter
-{
-	event OnEnterState( prevStateName : name )
-	{
-		EntryContextMoniter();
-	}
-	
-	entry function EntryContextMoniter()
-	{
-		Sleep(0.1);
-		parent.loot.UpdateInputContext();
-	}
-}
+
+
 
 class SGUI_CR4LootPopup extends CR4PopupBase
 {
@@ -155,6 +97,27 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 	var isSmall : bool;
 	var mcLootItemsListItem, textField, tfType : CScriptedFlashObject;
 	var c_cm : SGUI_Loot_Class_ContextMoniter;
+	
+	
+	// Function called whenever scrolling occurs. Receives the scroll position.
+	event OnScrollPosition( scroll : float ) : void
+	{
+		//theGame.GetGuiManager().ShowNotification("OnScrollPosition: " + scroll);
+	}
+	
+	//Function called whenever the focused entry changes. Receives the index and IDs.
+	event OnChangedIndex( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
+	{
+		//theGame.GetGuiManager().ShowNotification("OnChangedIndex" + "<br>index: " + index + "<br>id_str: " + id_str + "<br>id_name: " + id_name + "<br>id_item: " + thePlayer.inv.GetItemName(id_item));
+	}
+	
+	// Function called when an entry is clicked (or when the E key is pressed). Receives the index and IDs.
+	event OnSelect( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
+	{
+		//theGame.GetGuiManager().ShowNotification("OnSelect" + "<br>index: " + index + "<br>id_str: " + id_str + "<br>id_name: " + id_name + "<br>id_item: " + thePlayer.inv.GetItemName(id_item));
+	}
+	
+	
 	
 	
 	event  OnConfigUI()
@@ -193,12 +156,11 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 		this.mcLootItemModule.SetMemberFlashNumber("x", this.lootPopupData.x);
 		this.mcLootItemModule.SetMemberFlashNumber("y", this.lootPopupData.y);
 		
-		
 		m_fxSetWindowTitle.InvokeSelfOneArg( FlashArgString(this.lootPopupData.title) );
 		
 		if( this.lootPopupData.isBackgroundFilter )
 		{
-			m_fxSetBackground2Color.InvokeSelfThreeArgs( FlashArgBool(true), FlashArgInt(0x999999), FlashArgNumber(0.3) );
+			m_fxSetBackground2Color.InvokeSelfThreeArgs( FlashArgBool(true), FlashArgInt(0x000000), FlashArgNumber(0.6) );
 		}
 		
 		if( this.lootPopupData.index > 0 )
@@ -206,17 +168,15 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 			m_fxSetSelectionIndex.InvokeSelfOneArg( FlashArgInt(this.lootPopupData.index) );
 		}
 		
-		theGame.ForceUIAnalog(true);
-		theGame.GetGuiManager().RequestMouseCursor(true);
-		
 		
 		this.inputContext = this.lootPopupData.inputContext;
-		if( this.inputContext == '' )
-		{
-			this.inputContext = 'EMPTY_CONTEXT';
-		}
 		theInput.StoreContext( this.inputContext );
 		
+		
+		if( this.lootPopupData.isPause )
+		{
+			theGame.Pause("sgui_loot");
+		}
 		
 		theSound.SoundEvent("gui_loot_popup_open");
 		
@@ -245,9 +205,15 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 			targetSize = 1;
 		}
 		
-		if (theInput.LastUsedPCInput() && (theGame.GetGuiManager().mouseCursorRequestStack <= 1 && !theGame.GetGuiManager().GetIngameMenu().isMainMenu) )
+		if ( theGame.GetGuiManager().mouseCursorRequestStack <= 0 && !theGame.GetGuiManager().GetIngameMenu().isMainMenu )
 		{
-			theGame.MoveMouseTo(0.5, 0.5);
+			theGame.ForceUIAnalog(true);
+			theGame.GetGuiManager().RequestMouseCursor(true);
+			
+			if( theInput.LastUsedPCInput() )
+			{
+				theGame.MoveMouseTo(0.5, 0.5);
+			}
 		}
 		
 		m_fxSetWindowScale.InvokeSelfOneArg(FlashArgNumber(targetSize));
@@ -317,16 +283,16 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 			l_lootItemsDataFlashObject = m_flashValueStorage.CreateTempFlashObject();
 			content = this.popupEntries[i];
 			
-			l_lootItemsDataFlashObject.SetMemberFlashString	( "id_str", content.SGUI_LSEC_id_str );
-			l_lootItemsDataFlashObject.SetMemberFlashUInt	( "id_name", NameToFlashUInt(content.SGUI_LSEC_id_name) );
-			l_lootItemsDataFlashObject.SetMemberFlashUInt	( "id_item", ItemToFlashUInt(content.SGUI_LSEC_id_item) );
-			l_lootItemsDataFlashObject.SetMemberFlashString	( "label", content.SGUI_LSEC_label );
-			l_lootItemsDataFlashObject.SetMemberFlashString	( "quantity", content.SGUI_LSEC_quantity );
-			l_lootItemsDataFlashObject.SetMemberFlashString ( "iconPath", content.SGUI_LSEC_iconPath );
-			l_lootItemsDataFlashObject.SetMemberFlashInt	( "quality", content.SGUI_LSEC_color + 1 );
-			l_lootItemsDataFlashObject.SetMemberFlashBool	( "isRead", content.SGUI_LSEC_isIconTransparent);
-			l_lootItemsDataFlashObject.SetMemberFlashBool   ( "isQuestItem", content.SGUI_LSEC_isExclamation );
-			l_lootItemsDataFlashObject.SetMemberFlashString ( "itemType", content.SGUI_LSEC_subLabel );
+			l_lootItemsDataFlashObject.SetMemberFlashString	( "id_str", content.sgui_lsec_id_str );
+			l_lootItemsDataFlashObject.SetMemberFlashUInt	( "id_name", NameToFlashUInt(content.sgui_lsec_id_name) );
+			l_lootItemsDataFlashObject.SetMemberFlashUInt	( "id_item", ItemToFlashUInt(content.sgui_lsec_id_item) );
+			l_lootItemsDataFlashObject.SetMemberFlashString	( "label", content.sgui_lsec_label );
+			l_lootItemsDataFlashObject.SetMemberFlashString	( "quantity", content.sgui_lsec_quantity );
+			l_lootItemsDataFlashObject.SetMemberFlashString ( "iconPath", content.sgui_lsec_iconPath );
+			l_lootItemsDataFlashObject.SetMemberFlashInt	( "quality", content.sgui_lsec_color + 1 );
+			l_lootItemsDataFlashObject.SetMemberFlashBool	( "isRead", content.sgui_lsec_isIconSemiTransparent);
+			l_lootItemsDataFlashObject.SetMemberFlashBool   ( "isQuestItem", content.sgui_lsec_isExclamation );
+			l_lootItemsDataFlashObject.SetMemberFlashString ( "itemType", content.sgui_lsec_subLabel );
 			
 			l_lootItemsFlashArray.SetElementFlashObject( i, l_lootItemsDataFlashObject );
 		}
@@ -408,21 +374,6 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 		return GetItemRarityDescriptionFromInt(itemQuality);
 	}
 	
-	event OnScrollPosition( scroll : float ) : void
-	{
-		//theGame.GetGuiManager().ShowNotification("OnScrollPosition: " + scroll);
-	}
-	
-	event OnChangedIndex( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
-	{
-		//theGame.GetGuiManager().ShowNotification("OnChangedIndex" + "<br>index: " + index + "<br>id_str: " + id_str + "<br>id_name: " + id_name + "<br>id_item: " + thePlayer.inv.GetItemName(id_item));
-	}
-	
-	event OnSelect( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
-	{
-		//theGame.GetGuiManager().ShowNotification("OnSelect" + "<br>index: " + index + "<br>id_str: " + id_str + "<br>id_name: " + id_name + "<br>id_item: " + thePlayer.inv.GetItemName(id_item));
-	}
-	
 	event OnPopulated() : void
 	{
 		if( this.lootPopupData.scroll > 0 )
@@ -433,6 +384,37 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 	
 	event  OnCloseLootWindow()
 	{
+		if( theGame.IsPausedForReason("sgui_loot") )
+		{
+			theGame.Unpause("sgui_loot");
+		}
+		
 		ClosePopup();
+	}
+}
+
+
+statemachine class SGUI_Loot_Class_ContextMoniter
+{
+	var loot : SGUI_CR4LootPopup;
+	
+	function Init(loot : SGUI_CR4LootPopup)
+	{
+		this.loot = loot;
+		GotoState('SGUI_Loot_State_ContextMoniter');
+	}
+}
+
+state SGUI_Loot_State_ContextMoniter in SGUI_Loot_Class_ContextMoniter
+{
+	event OnEnterState( prevStateName : name )
+	{
+		EntryContextMoniter();
+	}
+	
+	entry function EntryContextMoniter()
+	{
+		Sleep(0.1);
+		parent.loot.UpdateInputContext();
 	}
 }
