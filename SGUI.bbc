@@ -1,0 +1,214 @@
+[size=2][size=3][color=#ffff00][u]It has not been tested on [color=#ff7700]Old-Gen (1.32)[/color], but in theory it should be compatible with all versions of the game.[/u][/color][/size]
+[i][/i]
+[size=6][color=#ffff00][b]PURPOSE[/b][/color][/size][i][/i][size=3]
+This is a custom GUI intended to be used as a shared resource for all mod developers.
+By having users install Shared GUI in advance, other mods will be able to use its custom GUI components.
+[youtube]Z93kMessHDE[/youtube]
+[/size]
+
+[size=6][color=#ffff00][b]FEATURES[/b][/color][/size][i][/i]
+[size=3]This section is intended for mod developers.[/size]
+
+[size=5][b][u]CUSTOM LOOT POPUP[/u][/b][/size]
+[spoiler]
+A GUI with clickable entries.
+To use it, you need to instantiate the SGUI_W3LootPopupData class and set several variables.
+Once the variables are set, call SGUI_Loot_OpenPopup(popupData : SGUI_W3LootPopupData) to display the GUI.
+
+Configurable variables:
+[spoiler][code]
+class SGUI_W3LootPopupData extends CObject
+{
+	var title : string; // Text displayed at the top of the panel.
+	var isPause : bool; // Pause the game while the popup is open.
+	var isBackgroundFilter : bool; // Applies a semi-transparent black filter to the background.
+	var scale : SGUI_Loot_Enum_Scale; // Allows you to choose whether the popup scale follows the game settings or is forced to either Large or Small.
+	var inputContext : name; // Input context during the popup.
+	var scroll : float; // Scroll position when the popup is opened.
+	var index : int; // Index of the entry that will be focused when the popup is opened.
+	var x, y : float; // Popup display position. The bottom-left corner is used as the reference point. Set it to a value between 0 and 1.
+	var entries : array< SGUI_Loot_Struct_EntryContents >; // Settings for each entry.
+	default inputContext = 'EMPTY_CONTEXT';
+	default x = 0.3472; default y = 0.8947;
+	//default x = 659.65; default y = 966.29;
+}
+
+struct SGUI_Loot_Struct_EntryContents
+{
+	var sgui_lsec_id_str : string; // ID that can be received by the OnChangedIndex and OnSelect functions.
+	var sgui_lsec_id_name : name; // ID that can be received by the OnChangedIndex and OnSelect functions.
+	var sgui_lsec_id_item : SItemUniqueId; // ID that can be received by the OnChangedIndex and OnSelect functions.
+	var sgui_lsec_label : string; // Main text of the entry.
+	var sgui_lsec_subLabel : string; // Subtext displayed below the main text.
+	var sgui_lsec_iconPath : string; // Path to the icon displayed to the left of the main text.
+	var sgui_lsec_quantity : string; // Text displayed in the bottom-right corner of the icon.
+	var sgui_lsec_isIconSemiTransparent : bool; // Makes the icon semi-transparent.
+	var sgui_lsec_isExclamation : bool; // Displays an exclamation mark to the left of the icon.
+	var sgui_lsec_color : SGUI_Loot_Enum_Colors; // Background color of the entry.
+}
+[/code][/spoiler]
+Example:
+[spoiler][img]https://i.imgur.com/NDTTBX2.png[/img][code]
+exec function sgui_loot_test()
+{
+	var popupData : SGUI_W3LootPopupData = new SGUI_W3LootPopupData in theGame;
+	var contents : SGUI_Loot_Struct_EntryContents;
+	var item : SItemUniqueId;
+	
+	
+	popupData.title = "TITLE";
+	popupData.x = 0.5;
+	popupData.y = 0.8;
+	popupData.isPause = true;
+	popupData.isBackgroundFilter = true;
+	popupData.scale = SGUI_LES_large;
+	
+	contents.sgui_lsec_id_str = "A";
+	contents.sgui_lsec_id_name = 'a';
+	contents.sgui_lsec_label = "AAA";
+	contents.sgui_lsec_subLabel = "aaa";
+	contents.sgui_lsec_quantity = "a";
+	contents.sgui_lsec_isExclamation = false;
+	SGUI_Loot_PushContents(popupData, contents);
+	
+	contents.sgui_lsec_id_str = "B";
+	contents.sgui_lsec_id_name = 'b';
+	contents.sgui_lsec_label = "BBB";
+	contents.sgui_lsec_subLabel = "bbb";
+	contents.sgui_lsec_isExclamation = true;
+	SGUI_Loot_PushContents(popupData, contents);
+	
+	GetWitcherPlayer().GetItemEquippedOnSlot(EES_SteelSword, item);
+	contents.sgui_lsec_id_str = "C";
+	contents.sgui_lsec_id_name = thePlayer.inv.GetItemName(item);
+	contents.sgui_lsec_id_item = item;
+	contents.sgui_lsec_label = thePlayer.inv.GetItemName(item);
+	contents.sgui_lsec_subLabel = "ccc";
+	contents.sgui_lsec_iconPath = thePlayer.inv.GetItemIconPathByUniqueID(item);
+	contents.sgui_lsec_isIconSemiTransparent = true;
+	contents.sgui_lsec_color = thePlayer.inv.GetItemQuality(item);
+	SGUI_Loot_PushContents(popupData, contents);
+	
+	SGUI_Loot_OpenPopup(popupData);
+}
+[/code][/spoiler]
+
+By wrapping the OnChangedIndex and OnSelect events, you can receive the index and IDs when the focused entry changes and when an entry is clicked.
+[spoiler][code]
+//Function called whenever the focused entry changes. Receives the index and IDs.
+event OnChangedIndex( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
+{
+	this.indexToFocus = index;
+	//theGame.GetGuiManager().ShowNotification("OnChangedIndex" + "<br>index: " + index + "<br>id_str: " + id_str + "<br>id_name: " + id_name + "<br>id_item: " + thePlayer.inv.GetItemName(id_item));
+}
+
+// Function called when an entry is clicked (or when the E key is pressed). Receives the index and IDs.
+event OnSelect( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
+{
+	//theGame.GetGuiManager().ShowNotification("OnSelect" + "<br>index: " + index + "<br>id_str: " + id_str + "<br>id_name: " + id_name + "<br>id_item: " + thePlayer.inv.GetItemName(id_item));
+}
+[/code][/spoiler]
+Example:
+[spoiler][code]
+@wrapMethod(SGUI_CR4LootPopup) function OnSelect( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
+{
+	var notificationData : SGUI_W3NotificationData = new SGUI_W3NotificationData in theGame;
+	var i : int;
+	
+	notificationData.messageText = id_str;
+	notificationData.x = 0.1;
+	notificationData.y = index * 0.1;
+	notificationData.alpha = 0.6;
+	for( i=0; i<index; i+=1 )
+	{
+		notificationData.color += 0x111111;
+	}
+	
+	SGUI_Notification_OpenPopup_1(notificationData);
+	
+	return wrappedMethod( index, id_str, id_name, id_item );
+}
+[/code][/spoiler]
+
+The popup can be closed using the ESC key or the right mouse button, but it can also be closed by calling the SGUI_Loot_ClosePopup() function in a script.
+[/spoiler]
+[size=5][b][u]CUSTOM NOTIFICATION POPUP[/u][/b][/size]
+[spoiler]
+A text display popup that allows free customization of panel color and size.
+To use it, you need to instantiate the SGUI_W3NotificationData class and set several variables.
+Once the variables are set, call either SGUI_Notification_OpenPopup_1(notificationData : SGUI_W3NotificationData) or SGUI_Notification_OpenPopup_2(notificationData : SGUI_W3NotificationData) to display the popup.
+[i][/i]
+SGUI_Notification_OpenPopup_2 is a duplicate of SGUI_Notification_OpenPopup_1.
+This allows two notification popups to be displayed simultaneously.
+
+Configurable variables:
+[spoiler][code]
+class SGUI_W3NotificationData extends CObject
+{
+	public var messageText 	: string; // Text.
+	public var duration    	: float; // Duration for displaying the popup. Set in milliseconds. If set to -1, it will no longer close automatically over time.
+	public var queue		: bool; // Waits until the currently displayed notification popup is closed.
+	default duration = 4000;
+	
+	var x, y : float; // Popup display position. The bottom-left corner is used as the reference point. Set it to a value between 0 and 1.
+	var w : float; // Width of the panel. The height is automatically adjusted based on the length of the text. If set to -1, it will use the same width as vanilla (automatically adjusted between 200 and 400).
+	var color : int; // Panel color. Set using a hexadecimal value such as `0xFFFFFF`. If set to `-1`, the vanilla color will be used.
+	var alpha : float; // Panel opacity. Set it to a value between 0 and 1.
+	var anim : bool; // Applies animations when the popup appears and disappears.
+	default x = 0.05;
+	default y = 0.95;
+	default w = -1;
+	default color = -1;
+	default alpha = 0.95;
+	default anim = true;
+}
+[/code][/spoiler]
+Example:
+[spoiler][img]https://i.imgur.com/1GnDnKZ.png[/img][code]
+exec function sgui_ov_test() : void
+{
+	var notificationData : SGUI_W3NotificationData;
+	
+	notificationData = new SGUI_W3NotificationData in theGame.GetGuiManager();
+	notificationData.messageText = "<font color='#FFFFFF'>" + "AAAAAAAAAAAAAAAAAA" + "</font>";
+	notificationData.w = 800;
+	notificationData.color = 0x333333;
+	notificationData.alpha = 0.8;
+	notificationData.anim = false;
+	
+	notificationData.x = 0.3;
+	notificationData.y = 0.4;
+	SGUI_Notification_OpenPopup_1(notificationData);
+	
+	notificationData.x = 0.3;
+	notificationData.y = 0.5;
+	SGUI_Notification_OpenPopup_2(notificationData);
+}
+[/code][/spoiler]
+
+If duration is set to -1, you must close the popup by calling SGUI_Notification_ClosePopup_1() or SGUI_Notification_ClosePopup_2() in a script.
+[/spoiler]
+
+[size=6][color=#ffff00][b]CHANGELOGS[/b][/color][/size]
+[spoiler]
+[size=5][u][b]Version 1.0.1[/b][/u][/size]
+[spoiler][list]
+[*]Initial release.
+[/list][/spoiler][/spoiler]
+
+[size=6][color=#ffff00][b]INSTALLATION[/b][/color][/size]
+[size=3]Download the main file, unzip it, and drop the "mods" folder inside it into your game's main directory. (The game's main directory is the directory where folders such as "bin", "content", and "dlc" are located.)
+[/size]
+
+[size=6][color=#ffff00][b]OTHERS[/b][/color][/size]
+[list]
+[*]If you like this mod, please support it by clicking the "Recommend" and "Vote" buttons at the top of this page!
+[*]If you have any questions or comments, feel free to post them on the POSTS tab.
+[*]Please also check out the [url=https://www.nexusmods.com/witcher3/users/80457153?tab=user+files]other mods I've created[/url].
+[/list][list]
+[*]The best Discord servers for asking questions about modding The Witcher 3:
+[list]
+[*][url=https://discord.gg/thewitcher]The official Witcher games server[/url] (For beginners, I recommend joining this server and checking the pinned messages in the modding channel.)
+[*][url=https://discord.gg/UEJMXuFZPy]Wolven Workshop server[/url]
+[/list][/list]
+[/size]

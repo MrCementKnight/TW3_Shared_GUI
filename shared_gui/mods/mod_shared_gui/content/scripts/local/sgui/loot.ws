@@ -16,6 +16,11 @@ function SGUI_Loot_ClosePopup()
 // Function for pushing each entry’s settings into an array.
 function SGUI_Loot_PushContents( out popupData : SGUI_W3LootPopupData, out contents : SGUI_Loot_Struct_EntryContents )
 {
+	if( contents.sgui_lsec_color == SGUI_LEC_none )
+	{
+		contents.sgui_lsec_color = SGUI_LEC_gray;
+	}
+	
 	popupData.entries.PushBack(contents);
 	
 	contents.sgui_lsec_id_str = "";
@@ -30,6 +35,16 @@ function SGUI_Loot_PushContents( out popupData : SGUI_W3LootPopupData, out conte
 	contents.sgui_lsec_isExclamation = false;
 }
 
+// Gets the current scroll position and the index of the currently focused entry.
+function SGUI_Loot_OutIndex( out index : int, out scroll : float )
+{
+	var lootPopup : SGUI_CR4LootPopup;
+	
+	lootPopup = (SGUI_CR4LootPopup)theGame.GetGuiManager().GetPopup('PsoPopup');
+	index = lootPopup.mcLootItemsList.GetMemberFlashInt("selectedIndex");
+	scroll = lootPopup.mcLootItemsList.GetMemberFlashNumber("scrollPosition");
+}
+
 class SGUI_W3LootPopupData extends CObject
 {
 	var title : string; // Text displayed at the top of the panel.
@@ -39,7 +54,7 @@ class SGUI_W3LootPopupData extends CObject
 	var inputContext : name; // Input context during the popup.
 	var scroll : float; // Scroll position when the popup is opened.
 	var index : int; // Index of the entry that will be focused when the popup is opened.
-	var x, y : float; // Popup display position. Set it to a value between 0 and 1.
+	var x, y : float; // Popup display position. The bottom-left corner is used as the reference point. Set it to a value between 0 and 1.
 	var entries : array< SGUI_Loot_Struct_EntryContents >; // Settings for each entry.
 	default inputContext = 'EMPTY_CONTEXT';
 	default x = 0.3472; default y = 0.8947;
@@ -69,6 +84,7 @@ enum SGUI_Loot_Enum_Scale
 
 enum SGUI_Loot_Enum_Colors
 {
+	SGUI_LEC_none, // Not available.
 	SGUI_LEC_gray,
 	SGUI_LEC_blue,
 	SGUI_LEC_yellow,
@@ -84,12 +100,15 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 {
 	private const var KEY_LOOT_ITEM_LIST :string; default KEY_LOOT_ITEM_LIST = "LootItemList";
 	
-	private var m_fxSetWindowTitle 		: CScriptedFlashFunction;
-	private var m_fxSetSelectionIndex	: CScriptedFlashFunction;
-	private var m_fxSetWindowScale		: CScriptedFlashFunction;
-	private var m_fxResizeBackground	:CScriptedFlashFunction;
-	private var m_fxSetBackground2Color	: CScriptedFlashFunction;
-	private var m_indexToSelect			: int; 							default m_indexToSelect = 0;
+	var m_fxSetWindowTitle 		: CScriptedFlashFunction;
+	var m_fxSetSelectionIndex	: CScriptedFlashFunction;
+	var m_fxSetWindowScale		: CScriptedFlashFunction;
+	var m_fxResizeBackground	:CScriptedFlashFunction;
+	var m_fxSetBackground2Color	: CScriptedFlashFunction;
+	
+	var indexToFocus : int; // Index of the currently focused entry.
+	var scrollPosition : float; // Current scroll position.
+	
 	var mcLootItemModule, mcLootItemsList  : CScriptedFlashObject;
 	var lootPopupData : SGUI_W3LootPopupData;
 	var popupEntries : array< SGUI_Loot_Struct_EntryContents >;
@@ -102,12 +121,14 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 	// Function called whenever scrolling occurs. Receives the scroll position.
 	event OnScrollPosition( scroll : float ) : void
 	{
+		this.scrollPosition = scroll;
 		//theGame.GetGuiManager().ShowNotification("OnScrollPosition: " + scroll);
 	}
 	
 	//Function called whenever the focused entry changes. Receives the index and IDs.
 	event OnChangedIndex( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
 	{
+		this.indexToFocus = index;
 		//theGame.GetGuiManager().ShowNotification("OnChangedIndex" + "<br>index: " + index + "<br>id_str: " + id_str + "<br>id_name: " + id_name + "<br>id_item: " + thePlayer.inv.GetItemName(id_item));
 	}
 	
@@ -205,9 +226,9 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 			targetSize = 1;
 		}
 		
+		theGame.ForceUIAnalog(true);
 		if ( theGame.GetGuiManager().mouseCursorRequestStack <= 0 && !theGame.GetGuiManager().GetIngameMenu().isMainMenu )
 		{
-			theGame.ForceUIAnalog(true);
 			theGame.GetGuiManager().RequestMouseCursor(true);
 			
 			if( theInput.LastUsedPCInput() )
@@ -289,7 +310,7 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 			l_lootItemsDataFlashObject.SetMemberFlashString	( "label", content.sgui_lsec_label );
 			l_lootItemsDataFlashObject.SetMemberFlashString	( "quantity", content.sgui_lsec_quantity );
 			l_lootItemsDataFlashObject.SetMemberFlashString ( "iconPath", content.sgui_lsec_iconPath );
-			l_lootItemsDataFlashObject.SetMemberFlashInt	( "quality", content.sgui_lsec_color + 1 );
+			l_lootItemsDataFlashObject.SetMemberFlashInt	( "quality", content.sgui_lsec_color );
 			l_lootItemsDataFlashObject.SetMemberFlashBool	( "isRead", content.sgui_lsec_isIconSemiTransparent);
 			l_lootItemsDataFlashObject.SetMemberFlashBool   ( "isQuestItem", content.sgui_lsec_isExclamation );
 			l_lootItemsDataFlashObject.SetMemberFlashString ( "itemType", content.sgui_lsec_subLabel );

@@ -51,7 +51,7 @@ class SGUI_W3NotificationData extends CObject
 	public var queue		: bool; // Waits until the currently displayed notification popup is closed.
 	default duration = 4000;
 	
-	var x, y : float; // Popup display position. Set it to a value between 0 and 1.
+	var x, y : float; // Popup display position. The bottom-left corner is used as the reference point. Set it to a value between 0 and 1.
 	var w : float; // Width of the panel. The height is automatically adjusted based on the length of the text. If set to -1, it will use the same width as vanilla (automatically adjusted between 200 and 400).
 	var color : int; // Panel color. Set using a hexadecimal value such as `0xFFFFFF`. If set to `-1`, the vanilla color will be used.
 	var alpha : float; // Panel opacity. Set it to a value between 0 and 1.
