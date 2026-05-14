@@ -113,7 +113,7 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 	var lootPopupData : SGUI_W3LootPopupData;
 	var popupEntries : array< SGUI_Loot_Struct_EntryContents >;
 	var inputContext : name;
-	var isSmall : bool;
+	var isSmall, isRequestMouseCursor : bool;
 	var mcLootItemsListItem, textField, tfType : CScriptedFlashObject;
 	var c_cm : SGUI_Loot_Class_ContextMoniter;
 	
@@ -226,10 +226,12 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 			targetSize = 1;
 		}
 		
-		theGame.ForceUIAnalog(true);
 		if ( theGame.GetGuiManager().mouseCursorRequestStack <= 0 && !theGame.GetGuiManager().GetIngameMenu().isMainMenu )
 		{
+			theGame.ForceUIAnalog(true);
 			theGame.GetGuiManager().RequestMouseCursor(true);
+			
+			this.isRequestMouseCursor = true;
 			
 			if( theInput.LastUsedPCInput() )
 			{
@@ -251,8 +253,12 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 			theInput.RestoreContext( this.inputContext, false );
 		}
 		
-		theGame.GetGuiManager().RequestMouseCursor(false);
-		theGame.ForceUIAnalog(false);
+		if ( this.isRequestMouseCursor )
+		{
+			theGame.ForceUIAnalog(false);
+			theGame.GetGuiManager().RequestMouseCursor(false);
+		}
+		
 	}
 	
 	public function UpdateInputContext():void
