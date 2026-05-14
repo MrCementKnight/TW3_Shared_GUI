@@ -188,6 +188,11 @@ exec function sgui_ov_test() : void
 
 If duration is set to -1, you must close the popup by calling SGUI_Notification_ClosePopup_1() or SGUI_Notification_ClosePopup_2() in a script.
 [/spoiler]
+[size=5][b][u]ICON EXTRACTED FROM SWF[/u][/b][/size]
+[spoiler]I extracted several icons from SWF.
+You can view the icons bundled with the mod from the Options file workspace.
+When displaying these icons in the HTML text area, you can use the function SGUI_Icon_GetScaledIcon(iconName : string, iconSize : int, optional vspace : int), which automatically adjusts the aspect ratio to match the specified iconSize.
+[/spoiler]
 
 [size=6][color=#ffff00][b]CHANGELOGS[/b][/color][/size]
 [spoiler]
