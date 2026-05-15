@@ -3,7 +3,7 @@
 [size=6][color=#ffff00][b]PURPOSE[/b][/color][/size][i][/i][size=3]
 This is a custom GUI intended to be used as a shared resource for all mod developers.
 By having users install Shared GUI in advance, other mods will be able to use its custom GUI components.
-[youtube]Z93kMessHDE[/youtube]
+[youtube]-_seCQc-w-E[/youtube]
 [/size]
 
 [size=6][color=#ffff00][b]FEATURES[/b][/color][/size][i][/i]
@@ -14,7 +14,7 @@ By having users install Shared GUI in advance, other mods will be able to use it
 A GUI with clickable entries.
 To use it, you need to instantiate the SGUI_W3LootPopupData class and set several variables.
 Once the variables are set, call SGUI_Loot_OpenPopup(popupData : SGUI_W3LootPopupData) to display the GUI.
-
+[i][/i]
 Configurable variables:
 [spoiler][code]
 class SGUI_W3LootPopupData extends CObject
@@ -92,8 +92,9 @@ exec function sgui_loot_test()
 	SGUI_Loot_OpenPopup(popupData);
 }
 [/code][/spoiler]
-
+[i][/i]
 By wrapping the OnChangedIndex and OnSelect events, you can receive the index and IDs when the focused entry changes and when an entry is clicked.
+[color=#ffff00]When wrapping events, you must always perform ID verification to distinguish them from Loot Popups opened by other mods.[/color]
 [spoiler][code]
 //Function called whenever the focused entry changes. Receives the index and IDs.
 event OnChangedIndex( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
@@ -110,10 +111,16 @@ event OnSelect( index : int, id_str : string, id_name : name, id_item : SItemUni
 [/code][/spoiler]
 Example:
 [spoiler][code]
-@wrapMethod(SGUI_CR4LootPopup) function OnSelect( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
+@wrapMethod(SGUI_CR4LootPopup) function OnSelect( index : int, id_str : string, id_name : name, id_item : SItemUniqueId )
 {
 	var notificationData : SGUI_W3NotificationData = new SGUI_W3NotificationData in theGame;
 	var i : int;
+	
+	
+	if( id_name != 'sgui_test_1' )
+	{
+		return wrappedMethod( index, id_str, id_name, id_item );
+	}
 	
 	notificationData.messageText = id_str;
 	notificationData.x = 0.1;
@@ -126,10 +133,10 @@ Example:
 	
 	SGUI_Notification_OpenPopup_1(notificationData);
 	
-	return wrappedMethod( index, id_str, id_name, id_item );
+	return true;
 }
 [/code][/spoiler]
-
+[i][/i]
 The popup can be closed using the ESC key or the right mouse button, but it can also be closed by calling the SGUI_Loot_ClosePopup() function in a script.
 [/spoiler]
 [size=5][b][u]CUSTOM NOTIFICATION POPUP[/u][/b][/size]
@@ -140,7 +147,10 @@ Once the variables are set, call either SGUI_Notification_OpenPopup_1(notificati
 [i][/i]
 SGUI_Notification_OpenPopup_2 is a duplicate of SGUI_Notification_OpenPopup_1.
 This allows two notification popups to be displayed simultaneously.
-
+[i][/i]
+The vanilla Notification Popup has animations when it appears and disappears, but these have been removed in the custom Notification Popup.
+At first, I planned to implement an option to enable or disable the animations, but I decided not to include it because it was causing bugs.
+[i][/i]
 Configurable variables:
 [spoiler][code]
 class SGUI_W3NotificationData extends CObject
@@ -154,13 +164,11 @@ class SGUI_W3NotificationData extends CObject
 	var w : float; // Width of the panel. The height is automatically adjusted based on the length of the text. If set to -1, it will use the same width as vanilla (automatically adjusted between 200 and 400).
 	var color : int; // Panel color. Set using a hexadecimal value such as `0xFFFFFF`. If set to `-1`, the vanilla color will be used.
 	var alpha : float; // Panel opacity. Set it to a value between 0 and 1.
-	var anim : bool; // Applies animations when the popup appears and disappears.
 	default x = 0.05;
 	default y = 0.95;
 	default w = -1;
 	default color = -1;
 	default alpha = 0.95;
-	default anim = true;
 }
 [/code][/spoiler]
 Example:
@@ -174,7 +182,6 @@ exec function sgui_ov_test() : void
 	notificationData.w = 800;
 	notificationData.color = 0x333333;
 	notificationData.alpha = 0.8;
-	notificationData.anim = false;
 	
 	notificationData.x = 0.3;
 	notificationData.y = 0.4;

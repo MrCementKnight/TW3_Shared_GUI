@@ -7,6 +7,7 @@ exec function sgui_test_1()
 	
 	for( i=0; i<16; i+=1 )
 	{
+		contents.sgui_lsec_id_name = 'sgui_test_1';
 		contents.sgui_lsec_id_str = "id_str: " + i;
 		contents.sgui_lsec_label = "Label " + i;
 		contents.sgui_lsec_subLabel = "subLabel " + i;
@@ -17,10 +18,16 @@ exec function sgui_test_1()
 	SGUI_Loot_OpenPopup(popupData);
 }
 
-@wrapMethod(SGUI_CR4LootPopup) function OnSelect( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
+@wrapMethod(SGUI_CR4LootPopup) function OnSelect( index : int, id_str : string, id_name : name, id_item : SItemUniqueId )
 {
 	var notificationData : SGUI_W3NotificationData = new SGUI_W3NotificationData in theGame;
 	var i : int;
+	
+	
+	if( id_name != 'sgui_test_1' )
+	{
+		return wrappedMethod( index, id_str, id_name, id_item );
+	}
 	
 	notificationData.messageText = id_str;
 	notificationData.x = 0.1;
@@ -33,7 +40,7 @@ exec function sgui_test_1()
 	
 	SGUI_Notification_OpenPopup_1(notificationData);
 	
-	return wrappedMethod( index, id_str, id_name, id_item );
+	return true;
 }
 
 
@@ -101,7 +108,6 @@ exec function sgui_ov_test() : void
 	notificationData.w = 800;
 	notificationData.color = 0x333333;
 	notificationData.alpha = 0.8;
-	notificationData.anim = false;
 	
 	notificationData.x = 0.3;
 	notificationData.y = 0.4;

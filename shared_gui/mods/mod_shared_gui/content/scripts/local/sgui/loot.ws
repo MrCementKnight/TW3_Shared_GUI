@@ -102,9 +102,6 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 	var m_fxResizeBackground	:CScriptedFlashFunction;
 	var m_fxSetBackground2Color	: CScriptedFlashFunction;
 	
-	var indexToFocus : int; // Index of the currently focused entry.
-	var scrollPosition : float; // Current scroll position.
-	
 	var mcLootItemModule, mcLootItemsList  : CScriptedFlashObject;
 	var lootPopupData : SGUI_W3LootPopupData;
 	var popupEntries : array< SGUI_Loot_Struct_EntryContents >;
@@ -115,21 +112,19 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 	
 	
 	// Event called whenever scrolling occurs. Receives the scroll position.
-	event OnScrollPosition( scroll : float ) : void
+	event OnScrollPosition( scroll : float )
 	{
-		this.scrollPosition = scroll;
 		//theGame.GetGuiManager().ShowNotification("OnScrollPosition: " + scroll);
 	}
 	
 	// Event called whenever the focused entry changes. Receives the index and IDs.
-	event OnChangedIndex( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
+	event OnChangedIndex( index : int, id_str : string, id_name : name, id_item : SItemUniqueId )
 	{
-		this.indexToFocus = index;
 		//theGame.GetGuiManager().ShowNotification("OnChangedIndex" + "<br>index: " + index + "<br>id_str: " + id_str + "<br>id_name: " + id_name + "<br>id_item: " + thePlayer.inv.GetItemName(id_item));
 	}
 	
 	// Event called when an entry is clicked (or when the E key is pressed). Receives the index and IDs.
-	event OnSelect( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
+	event OnSelect( index : int, id_str : string, id_name : name, id_item : SItemUniqueId )
 	{
 		//theGame.GetGuiManager().ShowNotification("OnSelect" + "<br>index: " + index + "<br>id_str: " + id_str + "<br>id_name: " + id_name + "<br>id_item: " + thePlayer.inv.GetItemName(id_item));
 	}
@@ -431,7 +426,7 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 		return GetItemRarityDescriptionFromInt(itemQuality);
 	}
 	
-	event OnPopulated() : void
+	event OnPopulated()
 	{
 		if( this.lootPopupData.scroll > 0 )
 		{

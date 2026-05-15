@@ -11,7 +11,7 @@ function SGUI_Notification_OpenPopup_1( notificationData : SGUI_W3NotificationDa
 	}
 	else
 	{
-		overlayPopupRef.ShowNotification( notificationData.messageText, notificationData.duration, notificationData.queue, notificationData.x, notificationData.y, notificationData.w, notificationData.color, notificationData.alpha, notificationData.anim );
+		overlayPopupRef.ShowNotification( notificationData.messageText, notificationData.duration, notificationData.queue, notificationData.x, notificationData.y, notificationData.w, notificationData.color, notificationData.alpha );
 	}
 }
 
@@ -28,20 +28,26 @@ function SGUI_Notification_OpenPopup_2( notificationData : SGUI_W3NotificationDa
 	}
 	else
 	{
-		overlayPopupRef.ShowNotification( notificationData.messageText, notificationData.duration, notificationData.queue, notificationData.x, notificationData.y, notificationData.w, notificationData.color, notificationData.alpha, notificationData.anim );
+		overlayPopupRef.ShowNotification( notificationData.messageText, notificationData.duration, notificationData.queue, notificationData.x, notificationData.y, notificationData.w, notificationData.color, notificationData.alpha );
 	}
 }
 
 // Function for closing the first notification popup.
 function SGUI_Notification_ClosePopup_1()
 {
-	theGame.ClosePopup('TestPopup');
+	var overlayPopupRef  : SGUI_CR4OverlayPopup;
+	
+	overlayPopupRef = (SGUI_CR4OverlayPopup)theGame.GetGuiManager().GetPopup('TestPopup');
+	overlayPopupRef.ShowNotification("");
 }
 
 // Function for closing the second notification popup.
 function SGUI_Notification_ClosePopup_2()
 {
-	theGame.ClosePopup('Test2Popup');
+	var overlayPopupRef  : SGUI_CR4OverlayPopup;
+	
+	overlayPopupRef = (SGUI_CR4OverlayPopup)theGame.GetGuiManager().GetPopup('Test2Popup');
+	overlayPopupRef.ShowNotification("");
 }
 
 class SGUI_W3NotificationData extends CObject
@@ -55,13 +61,11 @@ class SGUI_W3NotificationData extends CObject
 	var w : float; // Width of the panel. The height is automatically adjusted based on the length of the text. If set to -1, it will use the same width as vanilla (automatically adjusted between 200 and 400).
 	var color : int; // Panel color. Set using a hexadecimal value such as `0xFFFFFF`. If set to `-1`, the vanilla color will be used.
 	var alpha : float; // Panel opacity. Set it to a value between 0 and 1.
-	var anim : bool; // Applies animations when the popup appears and disappears.
 	default x = 0.05;
 	default y = 0.95;
 	default w = -1;
 	default color = -1;
 	default alpha = 0.95;
-	default anim = true;
 }
 
 class SGUI_CR4OverlayPopup extends CR4PopupBase
@@ -122,7 +126,7 @@ class SGUI_CR4OverlayPopup extends CR4PopupBase
 		
 		if (m_InitDataObject)
 		{
-			ShowNotification(m_InitDataObject.messageText, m_InitDataObject.duration, m_InitDataObject.queue, m_InitDataObject.x, m_InitDataObject.y, m_InitDataObject.w, m_InitDataObject.color, m_InitDataObject.alpha, m_InitDataObject.anim );
+			ShowNotification(m_InitDataObject.messageText, m_InitDataObject.duration, m_InitDataObject.queue, m_InitDataObject.x, m_InitDataObject.y, m_InitDataObject.w, m_InitDataObject.color, m_InitDataObject.alpha );
 		}
 		
 		m_cursorRequested = theGame.GetGuiManager().mouseCursorRequestStack;
@@ -260,10 +264,9 @@ class SGUI_CR4OverlayPopup extends CR4PopupBase
 		m_fxUpdateButtons.InvokeSelf();		
 	}
 	
-	public function ShowNotification(messageText : string, optional duration : float, optional queue :  bool, optional x : float, optional y : float, optional w : float, optional color : int, optional alpha : float, optional anim : bool ) : void
+	public function ShowNotification(messageText : string, optional duration : float, optional queue :  bool, optional x : float, optional y : float, optional w : float, optional color : int, optional alpha : float ) : void
 	{
-		m_fxShowNotification.InvokeSelfNineArgs( FlashArgString(messageText), FlashArgNumber(duration), FlashArgBool( queue ), FlashArgNumber(x), FlashArgNumber(y), FlashArgNumber(w), FlashArgInt(color), FlashArgNumber(alpha), FlashArgBool(anim) );
-		//m_fxShowNotification.InvokeSelfThreeArgs( FlashArgString(messageText), FlashArgNumber(duration), FlashArgBool( queue ) );
+		m_fxShowNotification.InvokeSelfEightArgs( FlashArgString(messageText), FlashArgNumber(duration), FlashArgBool( queue ), FlashArgNumber(x), FlashArgNumber(y), FlashArgNumber(w), FlashArgInt(color), FlashArgNumber(alpha) );
 	}
 	
 	public function HideNotification() : void
