@@ -333,7 +333,7 @@ class SGUI_CR4OverlayPopup extends CR4PopupBase
 	}
 }
 
-/*
+
 @wrapMethod(CR4Game) function OnGameStarting(restored : bool )
 {
 	theGame.RequestPopup( 'TestPopup' );
@@ -366,4 +366,3 @@ class SGUI_CR4OverlayPopup extends CR4PopupBase
 	
 	return wrappedMethod();
 }
-*/

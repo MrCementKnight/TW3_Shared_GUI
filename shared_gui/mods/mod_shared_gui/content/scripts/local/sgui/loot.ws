@@ -1,9 +1,6 @@
 // Function for opening the loot popup.
 function SGUI_Loot_OpenPopup( popupData : SGUI_W3LootPopupData )
 {
-	popupData.x = popupData.x * 1900;
-	popupData.y = popupData.y * 1080;
-	
 	theGame.RequestPopup('PsoPopup', popupData);
 }
 
@@ -54,11 +51,10 @@ class SGUI_W3LootPopupData extends CObject
 	var inputContext : name; // Input context during the popup.
 	var scroll : float; // Scroll position when the popup is opened.
 	var index : int; // Index of the entry that will be focused when the popup is opened.
-	var x, y : float; // Popup display position. The bottom-left corner is used as the reference point. Set it to a value between 0 and 1.
+	var x, y : float; // Popup display position. The bottom-left corner is used as the reference point. Set it to a value between 0 and 1. If set to -1, it will be displayed roughly at the center of the screen.
 	var entries : array< SGUI_Loot_Struct_EntryContents >; // Settings for each entry.
 	default inputContext = 'EMPTY_CONTEXT';
-	default x = 0.3472; default y = 0.8947;
-	//default x = 659.65; default y = 966.29;
+	default x = -1; default y = -1;
 }
 
 struct SGUI_Loot_Struct_EntryContents
@@ -118,27 +114,36 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 	var c_cm : SGUI_Loot_Class_ContextMoniter;
 	
 	
-	// Function called whenever scrolling occurs. Receives the scroll position.
+	// Event called whenever scrolling occurs. Receives the scroll position.
 	event OnScrollPosition( scroll : float ) : void
 	{
 		this.scrollPosition = scroll;
 		//theGame.GetGuiManager().ShowNotification("OnScrollPosition: " + scroll);
 	}
 	
-	//Function called whenever the focused entry changes. Receives the index and IDs.
+	// Event called whenever the focused entry changes. Receives the index and IDs.
 	event OnChangedIndex( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
 	{
 		this.indexToFocus = index;
 		//theGame.GetGuiManager().ShowNotification("OnChangedIndex" + "<br>index: " + index + "<br>id_str: " + id_str + "<br>id_name: " + id_name + "<br>id_item: " + thePlayer.inv.GetItemName(id_item));
 	}
 	
-	// Function called when an entry is clicked (or when the E key is pressed). Receives the index and IDs.
+	// Event called when an entry is clicked (or when the E key is pressed). Receives the index and IDs.
 	event OnSelect( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
 	{
 		//theGame.GetGuiManager().ShowNotification("OnSelect" + "<br>index: " + index + "<br>id_str: " + id_str + "<br>id_name: " + id_name + "<br>id_item: " + thePlayer.inv.GetItemName(id_item));
 	}
 	
-	
+	// Event called when the popup is closed.
+	event  OnCloseLootWindow()
+	{
+		if( theGame.IsPausedForReason("sgui_loot") )
+		{
+			theGame.Unpause("sgui_loot");
+		}
+		
+		ClosePopup();
+	}
 	
 	
 	event  OnConfigUI()
@@ -172,10 +177,6 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 			textField.SetMemberFlashNumber("width", 520);
 			tfType.SetMemberFlashNumber("width", 520);
 		}
-		
-		
-		this.mcLootItemModule.SetMemberFlashNumber("x", this.lootPopupData.x);
-		this.mcLootItemModule.SetMemberFlashNumber("y", this.lootPopupData.y);
 		
 		m_fxSetWindowTitle.InvokeSelfOneArg( FlashArgString(this.lootPopupData.title) );
 		
@@ -225,6 +226,35 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 		{
 			targetSize = 1;
 		}
+		
+		if( this.lootPopupData.x == -1 )
+		{
+			if( isSmall )
+			{
+				this.lootPopupData.x = 0.35;
+			}
+			else
+			{
+				this.lootPopupData.x = 0.32;
+			}
+		} 
+		if( this.lootPopupData.y == -1 )
+		{
+			if( isSmall )
+			{
+				this.lootPopupData.y = 0.82;
+			}
+			else
+			{
+				this.lootPopupData.y = 0.87;
+			}
+		}
+		
+		this.lootPopupData.x *= 1900;
+		this.lootPopupData.y *= 1080;
+		
+		this.mcLootItemModule.SetMemberFlashNumber("x", this.lootPopupData.x);
+		this.mcLootItemModule.SetMemberFlashNumber("y", this.lootPopupData.y);
 		
 		if ( theGame.GetGuiManager().mouseCursorRequestStack <= 0 && !theGame.GetGuiManager().GetIngameMenu().isMainMenu )
 		{
@@ -407,16 +437,6 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 		{
 			this.mcLootItemsList.SetMemberFlashNumber("scrollPosition", this.lootPopupData.scroll);
 		}
-	}
-	
-	event  OnCloseLootWindow()
-	{
-		if( theGame.IsPausedForReason("sgui_loot") )
-		{
-			theGame.Unpause("sgui_loot");
-		}
-		
-		ClosePopup();
 	}
 }
 

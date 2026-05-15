@@ -1,4 +1,4 @@
-[size=2][size=3][color=#ffff00][u]It has not been tested on [color=#ff7700]Old-Gen (1.32)[/color], but in theory it should be compatible with all versions of the game.[/u][/color][/size]
+[size=2][size=3][color=#ffff00]Requires game version 4.04a_REDkit_Update_2 (the latest version at the time of this mod’s release).[/color][/size]
 [i][/i]
 [size=6][color=#ffff00][b]PURPOSE[/b][/color][/size][i][/i][size=3]
 This is a custom GUI intended to be used as a shared resource for all mod developers.
@@ -189,14 +189,16 @@ exec function sgui_ov_test() : void
 If duration is set to -1, you must close the popup by calling SGUI_Notification_ClosePopup_1() or SGUI_Notification_ClosePopup_2() in a script.
 [/spoiler]
 [size=5][b][u]ICON EXTRACTED FROM SWF[/u][/b][/size]
-[spoiler]I extracted several icons from SWF.
+[spoiler]I extracted several icons from the SWF files and bundled them with the mod.
+[i][/i]
 You can view the icons bundled with the mod from the Options file workspace.
+[i][/i]
 When displaying these icons in the HTML text area, you can use the function SGUI_Icon_GetScaledIcon(iconName : string, iconSize : int, optional vspace : int), which automatically adjusts the aspect ratio to match the specified iconSize.
 [/spoiler]
 
 [size=6][color=#ffff00][b]CHANGELOGS[/b][/color][/size]
 [spoiler]
-[size=5][u][b]Version 1.0.1[/b][/u][/size]
+[size=5][u][b]Version 1.1.0[/b][/u][/size]
 [spoiler][list]
 [*]Initial release.
 [/list][/spoiler][/spoiler]
