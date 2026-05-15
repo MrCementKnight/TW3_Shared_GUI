@@ -1,4 +1,4 @@
-
+/*
 exec function sgui_test_1()
 {
 	var popupData : SGUI_W3LootPopupData = new SGUI_W3LootPopupData in theGame;
@@ -111,3 +111,4 @@ exec function sgui_ov_test() : void
 	notificationData.y = 0.5;
 	SGUI_Notification_OpenPopup_2(notificationData);
 }
+*/
