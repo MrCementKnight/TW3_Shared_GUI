@@ -45,7 +45,7 @@ function SGUI_Loot_OutIndex( out index : int, out scroll : float )
 class SGUI_W3LootPopupData extends CObject
 {
 	var title : string; // Text displayed at the top of the panel.
-	var isPause : bool; // Pause the game while the popup is open. (When closing the popup using SGUI_Loot_ClosePopup(), you also need to call theGame.Unpause("sgui_loot") at the same time.)
+	var isPause : bool; // Pause the game while the popup is open.
 	var isBackgroundFilter : bool; // Applies a semi-transparent black filter to the background.
 	var scale : SGUI_Loot_Enum_Scale; // Allows you to choose whether the popup scale follows the game settings or is forced to either Large or Small.
 	var inputContext : name; // Input context during the popup.
@@ -129,16 +129,31 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 		//theGame.GetGuiManager().ShowNotification("OnSelect" + "<br>index: " + index + "<br>id_str: " + id_str + "<br>id_name: " + id_name + "<br>id_item: " + thePlayer.inv.GetItemName(id_item));
 	}
 	
-	// Event called when the loot popup is closed by player input.
-	event  OnCloseLootWindow()
+	// Event called when the loot popup is closed.
+	event  OnClosingPopup()
 	{
+		super.OnClosingPopup();
+		if( theInput.GetContext() == this.inputContext )
+		{
+			theInput.RestoreContext( this.inputContext, false );
+		}
+		
+		if ( this.isRequestMouseCursor )
+		{
+			theGame.ForceUIAnalog(false);
+			theGame.GetGuiManager().RequestMouseCursor(false);
+		}
+		
 		if( theGame.IsPausedForReason("sgui_loot") )
 		{
 			theGame.Unpause("sgui_loot");
 		}
-		
+	}
+	
+	// Event called when the loot popup is closed by player input.
+	event  OnCloseLootWindow()
+	{
 		ClosePopup();
-		theGame.GetGuiManager().ShowNotification( "BBB" );
 	}
 	
 	
@@ -268,23 +283,6 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 		m_fxSetWindowScale.InvokeSelfOneArg(FlashArgNumber(targetSize));
 		
 		//theGame.GetGuiManager().ShowNotification("!<br>" + this.mcLootItemModule.GetMemberFlashNumber("x") +"<br>" + this.mcLootItemModule.GetMemberFlashNumber("y"));
-	}
-	
-	event  OnClosingPopup()
-	{
-		theSound.SoundEvent("gui_loot_popup_close");
-		super.OnClosingPopup();
-		if( theInput.GetContext() == this.inputContext )
-		{
-			theInput.RestoreContext( this.inputContext, false );
-		}
-		
-		if ( this.isRequestMouseCursor )
-		{
-			theGame.ForceUIAnalog(false);
-			theGame.GetGuiManager().RequestMouseCursor(false);
-		}
-		
 	}
 	
 	public function UpdateInputContext():void
