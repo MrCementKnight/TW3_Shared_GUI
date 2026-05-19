@@ -205,6 +205,10 @@ When displaying these icons in the HTML text area, you can use the function SGUI
 
 [size=6][color=#ffff00][b]CHANGELOGS[/b][/color][/size]
 [spoiler]
+[size=5][u][b]Version 1.1.3[/b][/u][/size]
+[spoiler][list]
+[*]Added explanatory comments to event OnCloseLootWindow() and OnConfigUI().
+[/list][/spoiler]
 [size=5][u][b]Version 1.1.2[/b][/u][/size]
 [spoiler][list]
 [*]I found that when a loot popup is closed using SGUI_Loot_ClosePopup(), the event OnCloseLootWindow() is not triggered, so I updated the explanatory comments in the script accordingly.

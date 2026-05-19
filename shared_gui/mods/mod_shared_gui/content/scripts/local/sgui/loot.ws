@@ -150,13 +150,13 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 		}
 	}
 	
-	// Event called when the loot popup is closed by player input.
+	// Event called when the loot popup is closed by player input. If you wrap this event and block the ClosePopup() call, the popup will not close.
 	event  OnCloseLootWindow()
 	{
 		ClosePopup();
 	}
 	
-	
+	// Event called when opening the popup.
 	event  OnConfigUI()
 	{
 		var targetSize : float;
@@ -284,6 +284,10 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 		
 		//theGame.GetGuiManager().ShowNotification("!<br>" + this.mcLootItemModule.GetMemberFlashNumber("x") +"<br>" + this.mcLootItemModule.GetMemberFlashNumber("y"));
 	}
+	
+	
+	
+	
 	
 	public function UpdateInputContext():void
 	{
