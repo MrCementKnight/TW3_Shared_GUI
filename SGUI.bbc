@@ -19,6 +19,7 @@ Configurable variables:
 [spoiler][code]
 class SGUI_W3LootPopupData extends CObject
 {
+	var tag : string; // Tag used to identify which mod opened the popup.
 	var title : string; // Text displayed at the top of the panel.
 	var isPause : bool; // Pause the game while the popup is open.
 	var isBackgroundFilter : bool; // Applies a semi-transparent black filter to the background.
@@ -26,11 +27,10 @@ class SGUI_W3LootPopupData extends CObject
 	var inputContext : name; // Input context during the popup.
 	var scroll : float; // Scroll position when the popup is opened.
 	var index : int; // Index of the entry that will be focused when the popup is opened.
-	var x, y : float; // Popup display position. The bottom-left corner is used as the reference point. Set it to a value between 0 and 1.
+	var x, y : float; // Popup display position. The bottom-left corner is used as the reference point. Set it to a value between 0 and 1. If set to -1, it will be displayed roughly at the center of the screen.
 	var entries : array< SGUI_Loot_Struct_EntryContents >; // Settings for each entry.
 	default inputContext = 'EMPTY_CONTEXT';
-	default x = 0.3472; default y = 0.8947;
-	//default x = 659.65; default y = 966.29;
+	default x = -1; default y = -1;
 }
 
 struct SGUI_Loot_Struct_EntryContents
@@ -56,6 +56,7 @@ exec function sgui_loot_test()
 	var item : SItemUniqueId;
 	
 	
+	popupData.tag = "sgui_loot_test";
 	popupData.title = "TITLE";
 	popupData.x = 0.5;
 	popupData.y = 0.8;
@@ -94,7 +95,7 @@ exec function sgui_loot_test()
 [/code][/spoiler]
 [i][/i]
 By wrapping the OnChangedIndex and OnSelect events, you can receive the index and IDs when the focused entry changes and when an entry is clicked.
-[color=#ffff00]When wrapping events, you must always perform ID verification to distinguish them from Loot Popups opened by other mods.[/color]
+[color=#ffff00]When wrapping events, you must always perform tag verification to distinguish them from Loot Popups opened by other mods. (You can get the tag of the currently opened custom loot popup by using the SGUI_Loot_GetTag() function.)[/color]
 [spoiler][code]
 //Function called whenever the focused entry changes. Receives the index and IDs.
 event OnChangedIndex( index : int, id_str : string, id_name : name, id_item : SItemUniqueId ) : void
@@ -117,7 +118,7 @@ Example:
 	var i : int;
 	
 	
-	if( id_name != 'sgui_test_1' )
+	if( SGUI_Loot_GetTag() != "sgui_test_1" )
 	{
 		return wrappedMethod( index, id_str, id_name, id_item );
 	}
@@ -137,7 +138,7 @@ Example:
 }
 [/code][/spoiler]
 [i][/i]
-The popup can be closed using the ESC key or the right mouse button, but it can also be closed by calling the SGUI_Loot_ClosePopup() function in a script.
+The popup can be closed using the ESC key or the right mouse button, but it can also be closed by calling the SGUI_Loot_ClosePopup( optional tag : string ) function in a script.
 [/spoiler]
 [size=5][b][u]CUSTOM NOTIFICATION POPUP[/u][/b][/size]
 [spoiler]
@@ -205,13 +206,17 @@ When displaying these icons in the HTML text area, you can use the function SGUI
 
 [size=6][color=#ffff00][b]CHANGELOGS[/b][/color][/size]
 [spoiler]
+[size=5][u][b]Version 1.2.0[/b][/u][/size]
+[spoiler][list]
+[*]Added an identification tag to the custom loot popup.
+[/list][/spoiler]
 [size=5][u][b]Version 1.1.3[/b][/u][/size]
 [spoiler][list]
 [*]Added explanatory comments to event OnCloseLootWindow() and OnConfigUI().
 [/list][/spoiler]
 [size=5][u][b]Version 1.1.2[/b][/u][/size]
 [spoiler][list]
-[*]I found that when a loot popup is closed using SGUI_Loot_ClosePopup(), the event OnCloseLootWindow() is not triggered, so I updated the explanatory comments in the script accordingly.
+[*]I found that when a loot popup is closed using SGUI_Loot_ClosePopup( optional tag : string ), the event OnCloseLootWindow() is not triggered, so I updated the explanatory comments in the script accordingly.
 [/list][/spoiler]
 [size=5][u][b]Version 1.1.1[/b][/u][/size]
 [spoiler][list]

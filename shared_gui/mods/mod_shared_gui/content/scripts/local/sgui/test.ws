@@ -5,9 +5,11 @@ exec function sgui_test_1()
 	var contents : SGUI_Loot_Struct_EntryContents;
 	var i : int;
 	
+	
+	popupData.tag = "sgui_test_1";
+	
 	for( i=0; i<16; i+=1 )
 	{
-		contents.sgui_lsec_id_name = 'sgui_test_1';
 		contents.sgui_lsec_id_str = "id_str: " + i;
 		contents.sgui_lsec_label = "Label " + i;
 		contents.sgui_lsec_subLabel = "subLabel " + i;
@@ -24,7 +26,7 @@ exec function sgui_test_1()
 	var i : int;
 	
 	
-	if( id_name != 'sgui_test_1' )
+	if( SGUI_Loot_GetTag() != "sgui_test_1" )
 	{
 		return wrappedMethod( index, id_str, id_name, id_item );
 	}
@@ -47,6 +49,11 @@ exec function sgui_test_1()
 
 
 
+exec function sgui_loot_showtag()
+{
+	theGame.GetGuiManager().ShowNotification(SGUI_Loot_GetTag());
+}
+
 exec function sgui_loot_test()
 {
 	var popupData : SGUI_W3LootPopupData = new SGUI_W3LootPopupData in theGame;
@@ -54,6 +61,7 @@ exec function sgui_loot_test()
 	var item : SItemUniqueId;
 	
 	
+	popupData.tag = "sgui_loot_test";
 	popupData.title = "TITLE";
 	popupData.x = 0.5;
 	popupData.y = 0.8;

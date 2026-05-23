@@ -5,8 +5,13 @@ function SGUI_Loot_OpenPopup( popupData : SGUI_W3LootPopupData )
 }
 
 // Function for closing the loot popup.
-function SGUI_Loot_ClosePopup()
+function SGUI_Loot_ClosePopup( optional tag : string )
 {
+	if( tag != "" && tag != SGUI_Loot_GetTag() )
+	{
+		return;
+	}
+	
 	theGame.ClosePopup('PsoPopup');
 }
 
@@ -42,8 +47,18 @@ function SGUI_Loot_OutIndex( out index : int, out scroll : float )
 	scroll = lootPopup.mcLootItemsList.GetMemberFlashNumber("scrollPosition");
 }
 
+// Gets the tag of the currently opened custom loot popup.
+function SGUI_Loot_GetTag() : string
+{
+	var lootPopup : SGUI_CR4LootPopup;
+	
+	lootPopup = (SGUI_CR4LootPopup)theGame.GetGuiManager().GetPopup('PsoPopup');
+	return lootPopup.lootPopupData.tag;
+}
+
 class SGUI_W3LootPopupData extends CObject
 {
+	var tag : string; // Tag used to identify which mod opened the popup.
 	var title : string; // Text displayed at the top of the panel.
 	var isPause : bool; // Pause the game while the popup is open.
 	var isBackgroundFilter : bool; // Applies a semi-transparent black filter to the background.
@@ -114,7 +129,7 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 	// Event called whenever scrolling occurs. Receives the scroll position.
 	event OnScrollPosition( scroll : float )
 	{
-		//theGame.GetGuiManager().ShowNotification("OnScrollPosition: " + scroll);
+		//theGame.GetGuiManager().ShowNotification("OnScrollPosition" + "<br>scroll: " + scroll);
 	}
 	
 	// Event called whenever the focused entry changes. Receives the index and IDs.
@@ -178,6 +193,8 @@ class SGUI_CR4LootPopup extends CR4PopupBase
 		m_fxSetWindowScale = m_flashModule.GetMemberFlashFunction( "SetWindowScale" );
 		m_fxResizeBackground = m_flashModule.GetMemberFlashFunction( "resizeBackground" );
 		m_fxSetBackground2Color = this.mcLootItemModule.GetMemberFlashFunction( "SetBackground2Color" );
+		
+		this.mcLootItemModule.SetMemberFlashString("tag", this.lootPopupData.tag);
 		
 		
 		for( i=1; i<=8; i+=1 )
